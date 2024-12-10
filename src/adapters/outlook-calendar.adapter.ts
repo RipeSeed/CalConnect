@@ -1,7 +1,7 @@
-import { Client } from '@microsoft/microsoft-graph-client';
-import { ICalendarCredentials } from '../types/calendar';
-import { adjustTimeByTimezone } from '../utils/general';
-import { CalendarAdapterBase } from './base-calendar.adapter';
+import { Client } from "@microsoft/microsoft-graph-client";
+import { ICalendarCredentials } from "../types/calendar";
+import { adjustTimeByTimezone } from "../utils/general";
+import { CalendarAdapterBase } from "./base-calendar.adapter";
 
 export class OutlookCalendarAdapter extends CalendarAdapterBase {
   private client: Client;
@@ -11,7 +11,7 @@ export class OutlookCalendarAdapter extends CalendarAdapterBase {
     super();
     this.credentials = credentials;
     this.client = Client.init({
-      authProvider: done => {
+      authProvider: (done) => {
         done(null, credentials.accessToken);
       },
     });

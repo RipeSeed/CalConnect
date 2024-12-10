@@ -27,8 +27,14 @@ export class CalendarService {
     return this.adapter.access(code, user_id);
   }
 
-  async getEventsInRange(startDate: string, endDate: string, timezone?: string, calendarId?: string): Promise<Slot[]> {
-    return this.adapter.getEventsInRange(startDate, endDate, timezone, calendarId);
+  async getEventsInRange(
+    userId: string,
+    startDate: string,
+    endDate: string,
+    timezone?: string,
+    calendarId?: string,
+  ): Promise<Slot[]> {
+    return this.adapter.getEventsInRange(userId, startDate, endDate, timezone, calendarId);
   }
   async createEvent(
     summary: string,

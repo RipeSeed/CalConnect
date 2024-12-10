@@ -1,8 +1,8 @@
 import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
-import { CalendarAdapterBase } from "./base-calendar.adapter.js";
-import { ICalendarCredentials } from "../types/calender.js";
-import { adjustTimeByTimezone } from "../utils/general.js";
+import { CalendarAdapterBase } from "./base-calendar.adapter";
+import { ICalendarCredentials } from "../types/calender";
+import { adjustTimeByTimezone } from "../utils/general";
 import mongoose, { Connection } from "mongoose";
 import { CalendarToken, ICalendarToken } from "../models/CalendarToken";
 
@@ -83,103 +83,145 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
     const { tokens } = await this.oauth2Client.getToken(code);
     this.oauth2Client.setCredentials(tokens);
     await this.saveToken(user_id, tokens);
-    console.log("===tokens===> ", tokens);
-
     return tokens;
   }
 
-  // async getEventsInRange(startDate: string, endDate: string, timezone: string, calendarId = "primary") {
-  //   const calendar = google.calendar({ version: "v3", auth: this.auth });
+  async getEventsInRange(userId: string, startDate: string, endDate: string, timezone: string, calendarId = "primary") {
+    const token = await CalendarToken.findOne({ userId });
+    if (!token) {
+      throw new Error("User not registered!");
+    }
 
-  //   // Convert start and end times to UTC
-  //   const timezoneHandledStart = adjustTimeByTimezone(startDate, timezone);
-  //   const timezoneHandledEnd = adjustTimeByTimezone(endDate, timezone);
+    this.oauth2Client.setCredentials({
+      access_token: token.accessToken,
+      refresh_token: token.refreshToken,
+      expiry_date: token.expiryDate.getTime(),
+    });
 
-  //   const events = await calendar.events.list({
-  //     calendarId,
-  //     timeMin: new Date(timezoneHandledStart).toISOString(),
-  //     timeMax: new Date(timezoneHandledEnd).toISOString(),
-  //     singleEvents: true,
-  //     orderBy: "startTime",
-  //   });
+    const calendar = google.calendar({ version: "v3", auth: this.oauth2Client });
+    console.log("===calendar===> ", calendar);
 
-  //   events.data.items?.forEach((event) => {
-  //     console.log(event);
-  //     console.log(event.start?.dateTime!);
-  //     console.log(new Date(event.start?.dateTime!));
-  //     console.log(new Date(event.start?.dateTime!).toISOString());
-  //     // console.log(new Date(event.start?.dateTime || event.start?.date!).toISOString());
-  //   });
+    const timezoneHandledStart = adjustTimeByTimezone(startDate, timezone);
+    console.log("===timezoneHandledStart===> ", timezoneHandledStart);
 
-  //   return (
-  //     events.data.items?.map((event) => ({
-  //       startDate: new Date(event.start?.dateTime || event.start?.date!).toISOString(),
-  //       endDate: new Date(event.end?.dateTime || event.end?.date!).toISOString(),
-  //     })) || []
-  //   );
-  // }
+    const timezoneHandledEnd = adjustTimeByTimezone(endDate, timezone);
+    console.log("===timezoneHandledEnd===> ", timezoneHandledEnd);
 
-  // async createEvent(
-  //   summary: string,
-  //   start: string,
-  //   end: string,
-  //   timezone: string,
-  //   description?: string,
-  //   attendees?: { email: string }[],
-  //   calendarId?: string,
-  // ) {
-  //   const calendar = google.calendar({ version: "v3", auth: this.auth });
+    const events = await calendar.events.list({
+      calendarId,
+      timeMin: new Date(timezoneHandledStart).toISOString(),
+      timeMax: new Date(timezoneHandledEnd).toISOString(),
+      singleEvents: true,
+      orderBy: "startTime",
+    });
+    console.log("===events===> ", events);
 
-  //   const event = {
-  //     summary: summary,
-  //     description: description || "",
-  //     start: {
-  //       dateTime: start,
-  //       timeZone: timezone,
-  //     },
-  //     end: {
-  //       dateTime: end,
-  //       timeZone: timezone,
-  //     },
-  //     attendees: attendees || [],
-  //     reminders: {
-  //       useDefault: false,
-  //       overrides: [
-  //         { method: "email", minutes: 24 * 60 }, // Reminder 1 day before
-  //         { method: "popup", minutes: 10 }, // Popup reminder 10 minutes before
-  //       ],
-  //     },
-  //   };
+    return (
+      events.data.items?.map((event) => ({
+        startDate: new Date(event.start?.dateTime || event.start?.date!).toISOString(),
+        endDate: new Date(event.end?.dateTime || event.end?.date!).toISOString(),
+        summary: event.summary,
+        description: event.description || "",
+        location: event.location || "",
+      })) || []
+    );
+  }
 
-  //   try {
-  //     await calendar.events.insert({
-  //       calendarId: calendarId || "primary",
-  //       requestBody: event,
-  //     });
+  async createEvent(
+    userId: string,
+    summary: string,
+    start: string,
+    end: string,
+    timezone: string,
+    description?: string,
+    attendees?: { email: string }[],
+    calendarId?: string,
+  ) {
+    const token = await CalendarToken.findOne({ userId });
+    if (!token) {
+      throw new Error("User not registered!");
+    }
 
-  //     return "Successfully booked.";
-  //   } catch (error) {
-  //     console.error("Error creating event: ", error);
-  //     throw new Error("Failed to save the event in Google Calendar");
-  //   }
-  // }
-  // async refreshAccessToken() {
-  //   try {
-  //     if (!this.auth.credentials.refresh_token) {
-  //       throw new Error("Refresh token is missing. Unable to refresh access token.");
-  //     }
+    this.oauth2Client.setCredentials({
+      access_token: token.accessToken,
+      refresh_token: token.refreshToken,
+      expiry_date: token.expiryDate.getTime(),
+    });
 
-  //     const { credentials } = await this.auth.refreshAccessToken();
+    const calendar = google.calendar({ version: "v3", auth: this.oauth2Client });
 
-  //     this.auth.setCredentials(credentials);
+    const event = {
+      summary: summary,
+      description: description || "",
+      start: {
+        dateTime: start,
+        timeZone: timezone,
+      },
+      end: {
+        dateTime: end,
+        timeZone: timezone,
+      },
+      attendees: attendees || [],
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: "email", minutes: 24 * 60 },
+          { method: "popup", minutes: 10 },
+        ],
+      },
+    };
 
-  //     return {
-  //       accessToken: credentials.access_token,
-  //       refreshToken: credentials.refresh_token || this.auth.credentials.refresh_token,
-  //     };
-  //   } catch (error) {
-  //     console.error("Error refreshing access token:", error);
-  //     throw error;
-  //   }
-  // }
+    try {
+      const response = await calendar.events.insert({
+        calendarId: calendarId || "primary",
+        requestBody: event,
+      });
+
+      console.log("Event created successfully: ", response.data);
+      return {
+        message: "Event successfully booked.",
+        eventId: response.data.id,
+        eventLink: response.data.htmlLink,
+      };
+    } catch (error) {
+      console.error("Error creating event: ", error);
+      throw new Error("Failed to save the event in Google Calendar");
+    }
+  }
+
+  async refreshAccessToken(userId: string): Promise<{ accessToken: string; refreshToken: string }> {
+    try {
+      const token = await CalendarToken.findOne({ userId });
+      if (!token) {
+        throw new Error("User not registered!");
+      }
+
+      if (!token.refreshToken) {
+        throw new Error("Refresh token is missing. Unable to refresh access token.");
+      }
+
+      this.oauth2Client.setCredentials({
+        refresh_token: token.refreshToken,
+      });
+
+      const { credentials } = await this.oauth2Client.refreshAccessToken();
+
+      await CalendarToken.updateOne(
+        { userId },
+        {
+          accessToken: credentials.access_token,
+          expiryDate: new Date(credentials.expiry_date!),
+          refreshToken: credentials.refresh_token || token.refreshToken,
+        },
+      );
+
+      return {
+        accessToken: credentials.access_token,
+        refreshToken: credentials.refresh_token || token.refreshToken,
+      };
+    } catch (error) {
+      console.error("Error refreshing access token:", error.message);
+      throw new Error("Failed to refresh access token");
+    }
+  }
 }

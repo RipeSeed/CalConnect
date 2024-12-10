@@ -1,4 +1,6 @@
-const adjustTimeByTimezone = (dateString: string, timezone: string): string => {
+import moment from "moment-timezone";
+
+export const adjustTimeByTimezone = (dateString: string, timezone: string): string => {
   // Parse the input date as UTC
   const utcDate = moment.utc(dateString);
   // Convert the UTC date to the target timezone

@@ -5,6 +5,7 @@ export abstract class CalendarAdapterBase {
   abstract connect(): string;
   abstract access(code: string, user_id: string): Promise<any>;
   abstract getEventsInRange(
+    userId: string,
     startDate: string,
     endDate: string,
     timezone?: string,
