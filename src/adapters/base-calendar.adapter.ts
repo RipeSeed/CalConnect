@@ -1,8 +1,9 @@
 import { ICredentials, Slot } from "../types/calender.js";
 
 export abstract class CalendarAdapterBase {
+  abstract connectDB(connectionString: string): Promise<void>;
   abstract connect(): string;
-  abstract access(code: string): Promise<any>;
+  abstract access(code: string, user_id: string): Promise<any>;
   abstract getEventsInRange(
     startDate: string,
     endDate: string,

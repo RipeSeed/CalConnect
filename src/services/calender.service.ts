@@ -6,10 +6,10 @@ import { AvailableCalendars, ICredentials, Slot } from "../types/calender.js";
 export class CalendarService {
   private adapter: CalendarAdapterBase;
 
-  constructor(provider: string, credentials: any) {
+  constructor(provider: string, credentials: any, connectionString: string) {
     switch (provider) {
       case AvailableCalendars.google:
-        this.adapter = new GoogleCalendarAdapter(credentials);
+        this.adapter = new GoogleCalendarAdapter(credentials, connectionString);
         break;
       // case AvailableCalendars.outlook:
       //   this.adapter = new OutlookCalendarAdapter(credentials);
@@ -23,8 +23,8 @@ export class CalendarService {
     return this.adapter.connect();
   }
 
-  async access(code: string): Promise<any> {
-    return this.adapter.access(code);
+  async access(code: string, user_id: string): Promise<any> {
+    return this.adapter.access(code, user_id);
   }
 
   async getEventsInRange(startDate: string, endDate: string, timezone?: string, calendarId?: string): Promise<Slot[]> {

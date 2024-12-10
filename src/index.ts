@@ -6,12 +6,17 @@ const port = 3000;
 const clientId = "919434230087-pate7tm5eohs7aaccdl540hfjm5onnk7.apps.googleusercontent.com";
 const clientSecret = "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";
 const redirectUri = "https://2295-119-156-116-75.ngrok-free.app/auth/callback";
+const mongoDB = "mongodb://admin:password@localhost:27017";
 
-const calender = new CalendarService("google", {
-  clientId: clientId,
-  clientSecret: clientSecret,
-  redirectUri: redirectUri,
-});
+const calender = new CalendarService(
+  "google",
+  {
+    clientId: clientId,
+    clientSecret: clientSecret,
+    redirectUri: redirectUri,
+  },
+  mongoDB,
+);
 
 app.get("/connect", async (req: Request, res: Response): Promise<void> => {
   calender.connect();
@@ -28,7 +33,7 @@ app.get("/auth/callback", async (req: Request, res: Response): Promise<void> => 
   }
 
   try {
-    const tokens = await calender.access(code);
+    const tokens = await calender.access(code, "testing_user");
     res.status(200).json({ tokens });
   } catch (error) {
     console.error("Error during authentication", error);
