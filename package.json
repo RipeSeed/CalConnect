@@ -1,0 +1,57 @@
+{
+  "name": "express-typescript-boilerplate",
+  "version": "1.0.14",
+  "description": "An Express boilerplate backend",
+  "author": "Edwin Hernandez",
+  "repository": "edwinhern/express-typescript-2024",
+  "license": "MIT",
+  "main": "index.ts",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts | pino-pretty",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "clean": "rimraf dist coverage",
+    "lint": "biome check src/",
+    "lint:fix": "biome check src/ --fix",
+    "format": "biome format src/",
+    "test": "vitest run",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
+    "google-auth-library": "^9.15.0",
+    "googleapis": "^144.0.0",
+    "helmet": "^8.0.0",
+    "http-status-codes": "^2.3.0",
+    "pino": "^9.4.0",
+    "pino-http": "^10.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "lint-staged": "^15.2.2",
+    "pino-pretty": "^11.0.0",
+    "rimraf": "^6.0.0",
+    "tsup": "^8.0.2",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.4"
+  },
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,json,jsonc}": [
+      "biome check --apply --no-errors-on-unmatched"
+    ]
+  },
+  "tsup": {
+    "entry": [
+      "src"
+    ],
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true
+  }
+}
