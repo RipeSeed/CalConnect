@@ -14,7 +14,7 @@
     "clean": "rimraf dist coverage",
     "lint": "biome check src/",
     "lint:fix": "biome check src/ --fix",
-    "format": "biome format src/",
+    "format": "biome format src/ --write",
     "test": "vitest run",
     "prepare": "husky"
   },

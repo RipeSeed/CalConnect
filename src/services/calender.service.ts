@@ -27,18 +27,8 @@ export class CalendarService {
     return this.adapter.access(code);
   }
 
-  async getEventsInRange(
-    startDate: string,
-    endDate: string,
-    timezone?: string,
-    calendarId?: string,
-  ): Promise<Slot[]> {
-    return this.adapter.getEventsInRange(
-      startDate,
-      endDate,
-      timezone,
-      calendarId,
-    );
+  async getEventsInRange(startDate: string, endDate: string, timezone?: string, calendarId?: string): Promise<Slot[]> {
+    return this.adapter.getEventsInRange(startDate, endDate, timezone, calendarId);
   }
   async createEvent(
     summary: string,
@@ -49,15 +39,7 @@ export class CalendarService {
     attendees?: { email: string }[],
     calendarId?: string,
   ): Promise<string> {
-    return this.adapter.createEvent(
-      summary,
-      start,
-      end,
-      timezone,
-      description,
-      attendees,
-      calendarId,
-    );
+    return this.adapter.createEvent(summary, start, end, timezone, description, attendees, calendarId);
   }
   async refreshAccessToken(): Promise<ICredentials> {
     return this.adapter.refreshAccessToken();

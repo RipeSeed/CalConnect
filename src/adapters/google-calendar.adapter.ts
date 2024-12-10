@@ -10,16 +10,8 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
 
   constructor(credentials: ICalendarCredentials) {
     super();
-    this.oauth2Client = new OAuth2Client(
-      credentials.clientId,
-      credentials.clientSecret,
-      credentials.redirectUri,
-    );
-    this.auth = new google.auth.OAuth2(
-      credentials.clientId,
-      credentials.clientSecret,
-      credentials.redirectUri,
-    );
+    this.oauth2Client = new OAuth2Client(credentials.clientId, credentials.clientSecret, credentials.redirectUri);
+    this.auth = new google.auth.OAuth2(credentials.clientId, credentials.clientSecret, credentials.redirectUri);
     this.auth.setCredentials({
       access_token: credentials.accessToken,
       refresh_token: credentials.refreshToken,
@@ -28,37 +20,32 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
 
   connect(): string {
     const authUrl = this.oauth2Client.generateAuthUrl({
-        access_type: "offline",
-        prompt: "consent",
-        scope: [
-            "https://www.googleapis.com/auth/calendar",
-            "https://www.googleapis.com/auth/calendar.events",
-            "https://www.googleapis.com/auth/calendar.readonly",
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/userinfo.profile"
-        ],
-        redirect_uri: this.redirectUri,
+      access_type: "offline",
+      prompt: "consent",
+      scope: [
+        "https://www.googleapis.com/auth/calendar",
+        "https://www.googleapis.com/auth/calendar.events",
+        "https://www.googleapis.com/auth/calendar.readonly",
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+      ],
+      redirect_uri: this.redirectUri,
     });
 
     console.log("===authUrl===> ", authUrl);
     return authUrl;
-}
+  }
 
-  async access(code: string): Promise<any> {    
+  async access(code: string): Promise<any> {
     const { tokens } = await this.oauth2Client.getToken(code);
     this.oauth2Client.setCredentials(tokens);
 
     console.log("===tokens===> ", tokens);
-    
+
     return tokens;
   }
 
-  async getEventsInRange(
-    startDate: string,
-    endDate: string,
-    timezone: string,
-    calendarId = "primary",
-  ) {
+  async getEventsInRange(startDate: string, endDate: string, timezone: string, calendarId = "primary") {
     const calendar = google.calendar({ version: "v3", auth: this.auth });
 
     // Convert start and end times to UTC
@@ -83,12 +70,8 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
 
     return (
       events.data.items?.map((event) => ({
-        startDate: new Date(
-          event.start?.dateTime || event.start?.date!,
-        ).toISOString(),
-        endDate: new Date(
-          event.end?.dateTime || event.end?.date!,
-        ).toISOString(),
+        startDate: new Date(event.start?.dateTime || event.start?.date!).toISOString(),
+        endDate: new Date(event.end?.dateTime || event.end?.date!).toISOString(),
       })) || []
     );
   }
@@ -140,9 +123,7 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
   async refreshAccessToken() {
     try {
       if (!this.auth.credentials.refresh_token) {
-        throw new Error(
-          "Refresh token is missing. Unable to refresh access token.",
-        );
+        throw new Error("Refresh token is missing. Unable to refresh access token.");
       }
 
       const { credentials } = await this.auth.refreshAccessToken();
@@ -151,8 +132,7 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
 
       return {
         accessToken: credentials.access_token,
-        refreshToken:
-          credentials.refresh_token || this.auth.credentials.refresh_token,
+        refreshToken: credentials.refresh_token || this.auth.credentials.refresh_token,
       };
     } catch (error) {
       console.error("Error refreshing access token:", error);
