@@ -24,7 +24,7 @@ export class CalendarService {
   }
 
   async access(code: string): Promise<any> {
-    return this.adapter.access();
+    return this.adapter.access(code);
   }
 
   async getEventsInRange(

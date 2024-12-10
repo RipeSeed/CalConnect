@@ -28,19 +28,28 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
 
   connect(): string {
     const authUrl = this.oauth2Client.generateAuthUrl({
-      access_type: "offline",
-      scope: [
-        "https://www.googleapis.com/auth/userinfo.profile",
-        "https://www.googleapis.com/auth/userinfo.email",
-      ],
-      redirect_uri: this.redirectUri,
+        access_type: "offline",
+        prompt: "consent",
+        scope: [
+            "https://www.googleapis.com/auth/calendar",
+            "https://www.googleapis.com/auth/calendar.events",
+            "https://www.googleapis.com/auth/calendar.readonly",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile"
+        ],
+        redirect_uri: this.redirectUri,
     });
-    return authUrl;
-  }
 
-  async access(code: string): Promise<any> {
+    console.log("===authUrl===> ", authUrl);
+    return authUrl;
+}
+
+  async access(code: string): Promise<any> {    
     const { tokens } = await this.oauth2Client.getToken(code);
     this.oauth2Client.setCredentials(tokens);
+
+    console.log("===tokens===> ", tokens);
+    
     return tokens;
   }
 
