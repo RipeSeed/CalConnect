@@ -198,9 +198,12 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
         throw new Error("Refresh token is missing. Unable to refresh access token.");
       }
 
+      const bufferPeriod = this.convertToMs(this.refreshInterval);
       const now = new Date().getTime();
-      if (now >= token.expiryDate.getTime()) {
-        console.log("Token expired, refreshing access token for the UserId: ", userId);
+      const expiryWithBuffer = token.expiryDate.getTime() - bufferPeriod;
+
+      if (now >= expiryWithBuffer) {
+        console.log("Token is close to expiring or has expired, refreshing access token for the UserId: ", userId);
         this.oauth2Client.setCredentials({
           refresh_token: token.refreshToken,
         });
@@ -222,7 +225,7 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
       } else {
         console.log("Token is still valid for the UserId: ", userId);
         return {
-          accessToken: token.access_token,
+          accessToken: token.accessToken,
           refreshToken: token.refreshToken,
         };
       }
