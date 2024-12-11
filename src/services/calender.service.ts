@@ -50,4 +50,10 @@ export class CalendarService {
   async refreshAccessToken(userId: string): Promise<ICredentials> {
     return this.adapter.refreshAccessToken(userId);
   }
+  startJob(): void {
+    return this.adapter.startJob();
+  }
+  stopJob(): void {
+    return this.adapter.stopJob();
+  }
 }

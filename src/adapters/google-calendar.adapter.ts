@@ -2,16 +2,20 @@ import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
 import { CalendarAdapterBase } from "./base-calendar.adapter";
 import { ICalendarCredentials } from "../types/calender";
-import { adjustTimeByTimezone } from "../utils/general";
+import { adjustTimeByTimezone, convertToMs } from "../utils/general";
 import mongoose, { Connection } from "mongoose";
 import { CalendarToken, ICalendarToken } from "../models/CalendarToken";
+import { ToadScheduler, SimpleIntervalJob, AsyncTask } from "toad-scheduler";
 
 export class GoogleCalendarAdapter extends CalendarAdapterBase {
   private oauth2Client: OAuth2Client;
   private connection: Connection | null = null;
+  private scheduler = new ToadScheduler();
+  private refreshInterval: string;
 
-  constructor(credentials: ICalendarCredentials, connectionString: string) {
+  constructor(credentials: ICalendarCredentials, connectionString: string, refreshInterval: string = "55 minute") {
     super();
+    this.refreshInterval = refreshInterval;
     this.connectDB(connectionString);
     this.oauth2Client = new OAuth2Client(credentials.clientId, credentials.clientSecret, credentials.redirectUri);
   }
@@ -183,26 +187,7 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
     }
   }
 
-  async ensureTokenValidity(userId) {
-    const token = await CalendarToken.findOne({ userId });
-    if (!token) {
-      throw new Error("User not registered!");
-    }
-
-    const now = new Date().getTime();
-    if (now >= token.expiryDate.getTime()) {
-      console.log("Token expired, refreshing access token for the UserId: ", userId);
-      return await this.refreshAccessToken(userId);
-    } else {
-      console.log("Token is still valid.");
-      return {
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
-      };
-    }
-  }
-
-  async refreshAccessToken(userId: string): Promise<{ accessToken: string; refreshToken: string }> {    
+  async refreshAccessToken(userId: string): Promise<{ accessToken: string; refreshToken: string }> {
     try {
       const token = await CalendarToken.findOne({ userId });
       if (!token) {
@@ -245,5 +230,36 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
       console.error("Error refreshing access token:", error.message);
       throw new Error("Failed to refresh access token");
     }
+  }
+
+  startJob() {
+    const task = new AsyncTask(
+      "refresh-access-tokens",
+      async () => {
+        console.log("Starting scheduled token refresh for all users.");
+        try {
+          const users = await CalendarToken.find();
+          for (const user of users) {
+            await this.refreshAccessToken(user.userId);
+          }
+        } catch (error) {
+          console.error("Error refreshing tokens for all users:", error);
+        }
+      },
+      (err: Error) => {
+        console.error("Error occurred during scheduled token refresh:", err);
+      },
+    );
+
+    const interval = convertToMs(this.refreshInterval);
+    const job = new SimpleIntervalJob({ milliseconds: interval }, task);
+
+    this.scheduler.addSimpleIntervalJob(job);
+    console.log("Token refresh job has been scheduled.");
+  }
+
+  stopJob() {
+    this.scheduler.stop();
+    console.log("All scheduled jobs have been stopped.");
   }
 }

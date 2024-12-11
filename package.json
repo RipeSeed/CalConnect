@@ -33,7 +33,8 @@
     "mongodb": "^6.11.0",
     "mongoose": "^8.8.4",
     "pino": "^9.4.0",
-    "pino-http": "^10.0.0"
+    "pino-http": "^10.0.0",
+    "toad-scheduler": "^3.0.1"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

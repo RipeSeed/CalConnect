@@ -98,6 +98,8 @@ app.get("/auth/callback", async (req: Request, res: Response): Promise<void> => 
   }
 });
 
+calender.startJob();
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

@@ -21,4 +21,6 @@ export abstract class CalendarAdapterBase {
     calendarId?: string,
   ): Promise<string>;
   abstract refreshAccessToken(userId: string): Promise<ICredentials>;
+  abstract startJob(): void;
+  abstract stopJob(): void;
 }
