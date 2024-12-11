@@ -99,13 +99,8 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
     });
 
     const calendar = google.calendar({ version: "v3", auth: this.oauth2Client });
-    console.log("===calendar===> ", calendar);
-
     const timezoneHandledStart = adjustTimeByTimezone(startDate, timezone);
-    console.log("===timezoneHandledStart===> ", timezoneHandledStart);
-
     const timezoneHandledEnd = adjustTimeByTimezone(endDate, timezone);
-    console.log("===timezoneHandledEnd===> ", timezoneHandledEnd);
 
     const events = await calendar.events.list({
       calendarId,
@@ -114,7 +109,6 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
       singleEvents: true,
       orderBy: "startTime",
     });
-    console.log("===events===> ", events);
 
     return (
       events.data.items?.map((event) => ({
@@ -189,7 +183,26 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
     }
   }
 
-  async refreshAccessToken(userId: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async ensureTokenValidity(userId) {
+    const token = await CalendarToken.findOne({ userId });
+    if (!token) {
+      throw new Error("User not registered!");
+    }
+
+    const now = new Date().getTime();
+    if (now >= token.expiryDate.getTime()) {
+      console.log("Token expired, refreshing access token for the UserId: ", userId);
+      return await this.refreshAccessToken(userId);
+    } else {
+      console.log("Token is still valid.");
+      return {
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+      };
+    }
+  }
+
+  async refreshAccessToken(userId: string): Promise<{ accessToken: string; refreshToken: string }> {    
     try {
       const token = await CalendarToken.findOne({ userId });
       if (!token) {
@@ -200,25 +213,34 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
         throw new Error("Refresh token is missing. Unable to refresh access token.");
       }
 
-      this.oauth2Client.setCredentials({
-        refresh_token: token.refreshToken,
-      });
+      const now = new Date().getTime();
+      if (now >= token.expiryDate.getTime()) {
+        console.log("Token expired, refreshing access token for the UserId: ", userId);
+        this.oauth2Client.setCredentials({
+          refresh_token: token.refreshToken,
+        });
 
-      const { credentials } = await this.oauth2Client.refreshAccessToken();
+        const { credentials } = await this.oauth2Client.refreshAccessToken();
 
-      await CalendarToken.updateOne(
-        { userId },
-        {
+        await CalendarToken.updateOne(
+          { userId },
+          {
+            accessToken: credentials.access_token,
+            expiryDate: new Date(credentials.expiry_date!),
+            refreshToken: credentials.refresh_token || token.refreshToken,
+          },
+        );
+        return {
           accessToken: credentials.access_token,
-          expiryDate: new Date(credentials.expiry_date!),
           refreshToken: credentials.refresh_token || token.refreshToken,
-        },
-      );
-
-      return {
-        accessToken: credentials.access_token,
-        refreshToken: credentials.refresh_token || token.refreshToken,
-      };
+        };
+      } else {
+        console.log("Token is still valid for the UserId: ", userId);
+        return {
+          accessToken: token.access_token,
+          refreshToken: token.refreshToken,
+        };
+      }
     } catch (error) {
       console.error("Error refreshing access token:", error.message);
       throw new Error("Failed to refresh access token");

@@ -39,6 +39,19 @@ app.get("/event", async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+app.get("/refresh", async (req: Request, res: Response): Promise<void> => {
+  const dummyUserId = "testing_user_ripeseed";
+
+  try {
+    const data = await calender.refreshAccessToken(dummyUserId);
+
+    res.status(200).json({ data });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).json({ error: "Failed to fetch events" });
+  }
+});
+
 app.get("/create-event", async (req: Request, res: Response): Promise<void> => {
   const userId = "testing_user_ripeseed";
   const summary = "Team Meeting";

@@ -47,7 +47,7 @@ export class CalendarService {
   ): Promise<string> {
     return this.adapter.createEvent(summary, start, end, timezone, description, attendees, calendarId);
   }
-  async refreshAccessToken(): Promise<ICredentials> {
-    return this.adapter.refreshAccessToken();
+  async refreshAccessToken(userId: string): Promise<ICredentials> {
+    return this.adapter.refreshAccessToken(userId);
   }
 }

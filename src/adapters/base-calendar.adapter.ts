@@ -20,5 +20,5 @@ export abstract class CalendarAdapterBase {
     attendees?: { email: string }[],
     calendarId?: string,
   ): Promise<string>;
-  abstract refreshAccessToken(): Promise<ICredentials>;
+  abstract refreshAccessToken(userId: string): Promise<ICredentials>;
 }
