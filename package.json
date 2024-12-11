@@ -6,7 +6,7 @@
   "repository": "",
   "license": "MIT",
   "main": "dist/index.js",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "tsx watch --clear-screen=false src/index.ts | pino-pretty",
     "build": "tsup",
@@ -15,8 +15,7 @@
     "lint": "biome check src/",
     "lint:fix": "biome check src/ --fix",
     "format": "biome format src/ --write",
-    "test": "vitest run",
-    "prepare": "husky install"
+    "test": "vitest run"
   },
   "dependencies": {
     "@microsoft/microsoft-graph-client": "^3.0.7",
