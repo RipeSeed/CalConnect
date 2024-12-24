@@ -1,15 +1,16 @@
 {
   "name": "calenderify",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Package for calendar integration",
   "author": "Ripeseed",
   "repository": "",
   "license": "MIT",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "private": false,
   "scripts": {
     "dev": "tsx watch --clear-screen=false src/index.ts | pino-pretty",
-    "build": "tsup",
+    "build": "tsc",
     "start": "node dist/index.js",
     "clean": "rimraf dist coverage",
     "lint": "biome check src/",

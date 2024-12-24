@@ -1,6 +1,7 @@
 import { CalendarAdapterBase } from "../adapters/base-calendar.adapter.js";
 import { GoogleCalendarAdapter } from "../adapters/google-calendar.adapter.js";
 import { AvailableCalendars, ICredentials, Slot } from "../types/calender.js";
+import { EventResponse } from "../types";
 
 export class CalendarService {
   private adapter: CalendarAdapterBase;
@@ -33,15 +34,16 @@ export class CalendarService {
     return this.adapter.getEventsInRange(userId, startDate, endDate, timezone, calendarId);
   }
   async createEvent(
-    summary: string,
-    start: string,
-    end: string,
-    timezone: string,
-    description?: string,
-    attendees?: { email: string }[],
-    calendarId?: string,
-  ): Promise<string> {
-    return this.adapter.createEvent(summary, start, end, timezone, description, attendees, calendarId);
+      userId: string,
+      summary: string,
+      start: string,
+      end: string,
+      timezone: string,
+      description?: string,
+      attendees?: { email: string }[],
+      calendarId?: string,
+  ): Promise<EventResponse> {
+    return this.adapter.createEvent(userId, summary, start, end, timezone, description, attendees, calendarId);
   }
   async refreshAccessToken(userId: string): Promise<ICredentials> {
     return this.adapter.refreshAccessToken(userId);
