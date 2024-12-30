@@ -2,6 +2,7 @@ import { CalendarAdapterBase } from "../adapters/base-calendar.adapter.js";
 import { GoogleCalendarAdapter } from "../adapters/google-calendar.adapter.js";
 import { AvailableCalendars, ICredentials, Slot } from "../types/calender.js";
 import { EventResponse } from "../types";
+import {OutlookCalendarAdapter} from "../adapters/outlook-calendar.adapter";
 
 export class CalendarService {
   private adapter: CalendarAdapterBase;
@@ -10,6 +11,9 @@ export class CalendarService {
     switch (provider) {
       case AvailableCalendars.google:
         this.adapter = new GoogleCalendarAdapter(credentials, connectionString);
+        break;
+      case AvailableCalendars.outlook:
+        this.adapter = new OutlookCalendarAdapter(credentials, connectionString);
         break;
       default:
         throw new Error("Unsupported calendar provider");
