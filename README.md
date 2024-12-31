@@ -1,6 +1,6 @@
 # Calendar Integration Package
 
-Seamlessly integrate calendar functionality into your Node.js applications with support for Google Calendar and an extensible architecture for additional providers.
+A simple library for scheduling and retrieving calendar events with just one login.
 
 ## Key Features
 
@@ -8,7 +8,7 @@ Seamlessly integrate calendar functionality into your Node.js applications with 
 - 🔄 Automatic refresh token management with background jobs
 - 📅 Comprehensive event management (create, retrieve, query)
 - 🌍 Built-in timezone support
-- 📚 Multiple calendar support
+- 📚 Multiple calendar support (Currently only Google)
 - 🏗️ Extensible architecture for additional providers
 
 ## Installation
@@ -99,7 +99,7 @@ Returns the OAuth URL for calendar provider authentication.
 calendarService.connect(): string
 ```
 
-**Returns:** Authentication URL string
+**Returns:** Authentication URL string that you need to open and login one time for that account that you are going to schedule
 
 #### access()
 
@@ -111,7 +111,7 @@ calendarService.access(code: string, user_id: string): Promise<ICredentials>
 
 **Parameters:**
 - `code`: OAuth authorization code
-- `user_id`: Unique identifier for the user
+  - `user_id`: Unique identifier of your user that you need to provide and use for further operations
 
 **Returns:** Promise resolving to credentials object
 
