@@ -281,6 +281,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 📦 [GitHub Issues](https://github.com/RipeSeed/calenders/issues)
-- 📧 Email: dev@ripeseed.io.com
-- 📚 [Documentation](https://github.com/RipeSeed/calenders/blob/main/README.md)
+- 📦 [GitHub Issues](https://github.com/RipeSeed/CalConnect/issues)
+- 📧 Email: dev@ripeseed.io
+- 📚 [Documentation](https://github.com/RipeSeed/CalConnect/blob/main/README.md)
