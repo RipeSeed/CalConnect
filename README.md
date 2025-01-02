@@ -14,19 +14,19 @@ A simple library for scheduling and retrieving calendar events with just one log
 ## Installation
 
 ```bash
-npm install calendar-integration-package
+npm install cal-connect
 ```
 
 ## Importing the Package
 
 ### ESM (Recommended)
 ```javascript
-import { CalendarService } from 'calendar-integration-package';
+import { CalendarService } from 'cal-connect';
 ```
 
 ### CommonJS
 ```javascript
-const { CalendarService } = require('calendar-integration-package');
+const { CalendarService } = require('cal-connect');
 ```
 
 ## Example Usage
@@ -231,6 +231,37 @@ try {
 5. Stop the refresh job when shutting down your application
 6. Store user IDs securely
 7. Use try-catch blocks around async operations
+
+## Contributors
+
+Thank you to all the amazing contributors who have helped improve this project! 🎉
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/hureranadeem">
+        <img src="https://media.licdn.com/dms/image/v2/D4E03AQFCBxhtJVSlMw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1710809295284?e=1741219200&v=beta&t=Yo-K4_cBPlqkh5kkBt8nJzJ_jOPB0LyxQWTVej2lDBQ" width="100px;" alt="Hurera Nadeem"/>
+        <br />
+        <sub><b>Hurera Nadeem</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/farhanranjha">
+        <img src="https://media.licdn.com/dms/image/v2/C4D03AQFfCC1vkWBQFQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1656570745417?e=1741219200&v=beta&t=C7QXwfC4qjcoCaMwFo8t1RouYipGq2MowxHtIrlUTyk" width="100px;" alt="Farhan Ranjha"/>
+        <br />
+        <sub><b>Farhan Ranjha</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/raousama391">
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQH8u9t8-U9hgQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1728028417783?e=1741219200&v=beta&t=RZFM6girBqVO-47BDnuJAL_cXWlTO69jF6o5TVVGQ2I" width="100px;" alt="Usama Javed"/>
+        <br />
+        <sub><b>Usama Javed</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
 
 ## Contributing
 
