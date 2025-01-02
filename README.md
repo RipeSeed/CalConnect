@@ -1,4 +1,4 @@
-# Calendar Integration Package
+# CalConnect - Calendar Integration Package
 
 A simple library for scheduling and retrieving calendar events with just one login.
 
