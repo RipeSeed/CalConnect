@@ -91,7 +91,6 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
       throw new Error("No access token received");
     }
 
-    // Create a properly typed token object
     const tokenData = {
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token || undefined,
