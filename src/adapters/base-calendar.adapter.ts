@@ -1,4 +1,5 @@
 import { ICredentials, Slot } from "../types/calender.js";
+import { EventResponse } from "../types";
 
 export abstract class CalendarAdapterBase {
   abstract connectDB(connectionString: string): Promise<void>;
@@ -12,6 +13,7 @@ export abstract class CalendarAdapterBase {
     calendarId?: string,
   ): Promise<Slot[]>;
   abstract createEvent(
+    userId: string,
     summary: string,
     start: string,
     end: string,
@@ -19,7 +21,7 @@ export abstract class CalendarAdapterBase {
     description?: string,
     attendees?: { email: string }[],
     calendarId?: string,
-  ): Promise<string>;
+  ): Promise<EventResponse>;
   abstract refreshAccessToken(userId: string): Promise<ICredentials>;
   abstract startJob(): void;
   abstract stopJob(): void;
