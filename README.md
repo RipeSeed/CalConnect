@@ -277,7 +277,7 @@ Please ensure your code follows our coding standards and includes appropriate te
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/RipeSeed/CalConnect/blob/main/LICENSE) file for details.
 
 ## Support
 
