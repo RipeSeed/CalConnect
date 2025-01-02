@@ -1,5 +1,5 @@
-import { ICredentials, Slot } from '../types/calender.js';
-import { EventResponse } from '../types';
+import { ICredentials, Slot } from "../types/calender.js";
+import { EventResponse } from "../types";
 
 export abstract class CalendarAdapterBase {
   abstract connectDB(connectionString: string): Promise<void>;

@@ -1,2 +1,2 @@
-export { CalendarService } from './services/calender.service';
-export * from './types/index';
+export { CalendarService } from "./services/calender.service";
+export * from "./types/index";
