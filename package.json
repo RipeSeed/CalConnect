@@ -1,9 +1,12 @@
 {
   "name": "@ripeseed/cal-connect",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Package for calendar integration",
   "author": "Ripeseed",
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RipeSeed/CalConnect"
+  },
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
