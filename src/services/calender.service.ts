@@ -26,8 +26,8 @@ export class CalendarService {
 
   /**
    * @constructor
-   * @param {string} provider - The calendar provider (e.g., "google").
-   * @param {AvailableCalendars | keyof typeof AvailableCalendars} credentials - The credentials required to authenticate with the calendar provider.
+   * @param {AvailableCalendars | keyof typeof AvailableCalendars} provider - The calendar provider (e.g., "google").
+   * @param {any} credentials - The credentials required to authenticate with the calendar provider.
    * @param {string} connectionString - The MongoDB connection string for storing tokens and user data.
    * @throws {Error} If an unsupported calendar provider is specified.
    */
