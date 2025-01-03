@@ -23,7 +23,7 @@ const dbConnectionString: string = 'mongodb://user:password@localhost:27017';
 
 // Initialize Calendar Service
 const calendarService = new CalendarService(
-  AvailableCalendars.outlook,
+  AvailableCalendars.outlook, // or simply 'outlook'
   outlookCredentials,
   dbConnectionString,
 );
