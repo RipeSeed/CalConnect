@@ -71,14 +71,16 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
     },
   ): Promise<void> {
     const tokenData = {
-      userId,
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token || null,
-      scope: tokens.scope,
-      tokenType: tokens.token_type,
-      expiryDate: new Date(tokens.expiry_date),
-      idToken: tokens.id_token || null,
-      updatedAt: new Date(),
+        google: {
+          userId,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token || null,
+          scope: tokens.scope,
+          tokenType: tokens.token_type,
+          expiryDate: new Date(tokens.expiry_date),
+          idToken: tokens.id_token || null,
+          updatedAt: new Date(),
+      }
     };
 
     await CalendarToken.updateOne({ userId }, { $set: tokenData }, { upsert: true });
@@ -111,10 +113,16 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
       throw new Error("User not registered!");
     }
 
+    const { google: googleToken } = token;
+
+    if (!googleToken){
+      throw new Error("User does not have google tokens!");
+    }
+
     this.oauth2Client.setCredentials({
-      access_token: token.accessToken,
-      refresh_token: token.refreshToken,
-      expiry_date: token.expiryDate.getTime(),
+      access_token: googleToken.accessToken,
+      refresh_token: googleToken.refreshToken,
+      expiry_date: googleToken.expiryDate.getTime(),
     });
 
     const calendar = google.calendar({ version: "v3", auth: this.oauth2Client });
@@ -155,10 +163,16 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
       throw new Error("User not registered!");
     }
 
+    const { google: googleToken } = token;
+
+    if (!googleToken){
+      throw new Error("User does not have google tokens!");
+    }
+
     this.oauth2Client.setCredentials({
-      access_token: token.accessToken,
-      refresh_token: token.refreshToken,
-      expiry_date: token.expiryDate.getTime(),
+      access_token: googleToken.accessToken,
+      refresh_token: googleToken.refreshToken,
+      expiry_date: googleToken.expiryDate.getTime(),
     });
 
     const calendar = google.calendar({ version: "v3", auth: this.oauth2Client });
@@ -215,17 +229,24 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
         throw new Error("User not registered!");
       }
 
-      if (!token.refreshToken) {
+      const { google: googleToken } = token;
+
+      if (!googleToken){
+        throw new Error("User does not have google tokens!");
+      }
+  
+
+      if (!googleToken.refreshToken) {
         throw new Error("Refresh token is missing. Unable to refresh access token.");
       }
 
       const bufferPeriod = convertToMs(this.refreshInterval);
       const now = new Date().getTime();
-      const expiryWithBuffer = token.expiryDate.getTime() - bufferPeriod;
+      const expiryWithBuffer = googleToken.expiryDate.getTime() - bufferPeriod;
 
       if (now >= expiryWithBuffer) {
         this.oauth2Client.setCredentials({
-          refresh_token: token.refreshToken,
+          refresh_token: googleToken.refreshToken,
         });
 
         const { credentials } = await this.oauth2Client.refreshAccessToken();
@@ -233,22 +254,24 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
           await CalendarToken.updateOne(
             { userId },
             {
-              accessToken: credentials.access_token,
-              expiryDate: new Date(credentials.expiry_date!),
-              refreshToken: credentials.refresh_token || token.refreshToken,
+              google: {
+                accessToken: credentials.access_token,
+                expiryDate: new Date(credentials.expiry_date!),
+                refreshToken: credentials.refresh_token || googleToken.refreshToken,
+              }
             },
           );
           return {
             accessToken: credentials.access_token,
-            refreshToken: credentials.refresh_token || token.refreshToken,
+            refreshToken: credentials.refresh_token || googleToken.refreshToken,
           };
         }
         throw new Error("Failed to refresh access token");
       } else {
         console.log("Token is still valid for the UserId: ", userId);
         return {
-          accessToken: token.accessToken,
-          refreshToken: token.refreshToken,
+          accessToken: googleToken.accessToken,
+          refreshToken: googleToken.refreshToken,
         };
       }
     } catch (error) {
