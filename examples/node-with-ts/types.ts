@@ -24,6 +24,11 @@ export interface GoogleCredentials {
   clientSecret: string;
   redirectUri: string;
 }
+export interface OutlookCredentials {
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+}
 
 export interface CustomRequest extends Request {
   user?: {
