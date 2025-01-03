@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { AvailableCalendars, CalendarService } from '../../src/index';
+import { AvailableCalendars, CalendarService } from '@ripeseed/cal-connect';
 import {
   CallbackQuery,
   EventsQuery,
