@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { CalendarService } from 'cal-connect';
+import { AvailableCalendars, CalendarService } from '../../src/index';
 import {
   CallbackQuery,
   EventsQuery,
@@ -30,7 +30,7 @@ const dbConnectionString: string = 'mongodb://user:password@localhost:27017';
 
 // Initialize Calendar Service
 const calendarService = new CalendarService(
-  'google',
+  AvailableCalendars.google,
   googleCredentials,
   dbConnectionString,
 );
