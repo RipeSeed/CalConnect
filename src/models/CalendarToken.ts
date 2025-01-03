@@ -49,4 +49,4 @@ const CalendarTokenSchema = new Schema<ICalendarToken>({
 });
 
 export const CalendarToken: Model<ICalendarToken> =
-  mongoose.model<ICalendarToken>('CalendarToken', CalendarTokenSchema);
+  mongoose.model<ICalendarToken>('CalendarToken', CalendarTokenSchema, 'cal-connect-tokens');
