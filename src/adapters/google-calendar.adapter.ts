@@ -6,7 +6,7 @@ import { adjustTimeByTimezone, convertToMs } from "../utils/general";
 import mongoose, { Connection } from "mongoose";
 import { CalendarToken, ICalendarToken } from "../models/CalendarToken";
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from "toad-scheduler";
-import {EventResponse} from "../types";
+import { EventResponse } from "../types";
 
 export class GoogleCalendarAdapter extends CalendarAdapterBase {
   private oauth2Client: OAuth2Client;
@@ -91,14 +91,13 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
       throw new Error("No access token received");
     }
 
-    // Create a properly typed token object
     const tokenData = {
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token || undefined,
-      scope: tokens.scope || '',
-      token_type: tokens.token_type || 'Bearer',
+      scope: tokens.scope || "",
+      token_type: tokens.token_type || "Bearer",
       expiry_date: tokens.expiry_date || Date.now(),
-      id_token: tokens.id_token || undefined
+      id_token: tokens.id_token || undefined,
     };
 
     this.oauth2Client.setCredentials(tokens);
@@ -142,14 +141,14 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
   }
 
   async createEvent(
-      userId: string,
-      summary: string,
-      start: string,
-      end: string,
-      timezone: string,
-      description?: string,
-      attendees?: { email: string }[],
-      calendarId?: string,
+    userId: string,
+    summary: string,
+    start: string,
+    end: string,
+    timezone: string,
+    description?: string,
+    attendees?: { email: string }[],
+    calendarId?: string,
   ): Promise<EventResponse> {
     const token = await CalendarToken.findOne({ userId });
     if (!token) {
@@ -225,20 +224,19 @@ export class GoogleCalendarAdapter extends CalendarAdapterBase {
       const expiryWithBuffer = token.expiryDate.getTime() - bufferPeriod;
 
       if (now >= expiryWithBuffer) {
-
         this.oauth2Client.setCredentials({
           refresh_token: token.refreshToken,
         });
 
         const { credentials } = await this.oauth2Client.refreshAccessToken();
-        if(credentials.access_token){
+        if (credentials.access_token) {
           await CalendarToken.updateOne(
-              { userId },
-              {
-                accessToken: credentials.access_token,
-                expiryDate: new Date(credentials.expiry_date!),
-                refreshToken: credentials.refresh_token || token.refreshToken,
-              },
+            { userId },
+            {
+              accessToken: credentials.access_token,
+              expiryDate: new Date(credentials.expiry_date!),
+              refreshToken: credentials.refresh_token || token.refreshToken,
+            },
           );
           return {
             accessToken: credentials.access_token,
