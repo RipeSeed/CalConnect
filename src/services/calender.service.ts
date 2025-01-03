@@ -1,8 +1,8 @@
-import { CalendarAdapterBase } from "../adapters/base-calendar.adapter.js";
-import { GoogleCalendarAdapter } from "../adapters/google-calendar.adapter.js";
-import { AvailableCalendars, ICredentials, Slot } from "../types/calender.js";
-import { EventResponse } from "../types";
-import {OutlookCalendarAdapter} from "../adapters/outlook-calendar.adapter";
+import { CalendarAdapterBase } from '../adapters/base-calendar.adapter.js';
+import { GoogleCalendarAdapter } from '../adapters/google-calendar.adapter.js';
+import { AvailableCalendars, ICredentials, Slot } from '../types/calender.js';
+import { EventResponse } from '../types';
+import { OutlookCalendarAdapter } from '../adapters/outlook-calendar.adapter';
 
 /**
  * @class CalendarService
@@ -88,7 +88,13 @@ export class CalendarService {
     timezone?: string,
     calendarId?: string,
   ): Promise<Slot[]> {
-    return this.adapter.getEventsInRange(userId, startDate, endDate, timezone, calendarId);
+    return this.adapter.getEventsInRange(
+      userId,
+      startDate,
+      endDate,
+      timezone,
+      calendarId,
+    );
   }
 
   /**
@@ -114,7 +120,16 @@ export class CalendarService {
     attendees?: { email: string }[],
     calendarId?: string,
   ): Promise<EventResponse> {
-    return this.adapter.createEvent(userId, summary, start, end, timezone, description, attendees, calendarId);
+    return this.adapter.createEvent(
+      userId,
+      summary,
+      start,
+      end,
+      timezone,
+      description,
+      attendees,
+      calendarId,
+    );
   }
 
   /**
