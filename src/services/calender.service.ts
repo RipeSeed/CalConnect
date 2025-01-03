@@ -1,7 +1,8 @@
-import { CalendarAdapterBase } from "../adapters/base-calendar.adapter.js";
-import { GoogleCalendarAdapter } from "../adapters/google-calendar.adapter.js";
-import { AvailableCalendars, ICredentials, Slot } from "../types/calender.js";
-import { EventResponse } from "../types";
+import { CalendarAdapterBase } from '../adapters/base-calendar.adapter.js';
+import { GoogleCalendarAdapter } from '../adapters/google-calendar.adapter.js';
+import { AvailableCalendars, ICredentials, Slot } from '../types/calender.js';
+import { EventResponse } from '../types';
+import { OutlookCalendarAdapter } from '../adapters/outlook-calendar.adapter';
 
 /**
  * @class CalendarService
@@ -12,20 +13,41 @@ import { EventResponse } from "../types";
 export class CalendarService {
   private adapter: CalendarAdapterBase;
 
+  private static normalizeProvider(
+    provider: keyof typeof AvailableCalendars,
+  ): AvailableCalendars {
+    if (
+      Object.values(AvailableCalendars).includes(provider as AvailableCalendars)
+    ) {
+      return provider as AvailableCalendars;
+    }
+    throw new Error(`Unsupported calendar provider: ${provider}`);
+  }
+
   /**
    * @constructor
    * @param {string} provider - The calendar provider (e.g., "google").
-   * @param {any} credentials - The credentials required to authenticate with the calendar provider.
+   * @param {AvailableCalendars | keyof typeof AvailableCalendars} credentials - The credentials required to authenticate with the calendar provider.
    * @param {string} connectionString - The MongoDB connection string for storing tokens and user data.
    * @throws {Error} If an unsupported calendar provider is specified.
    */
-  constructor(provider: string, credentials: any, connectionString: string) {
-    switch (provider) {
+  constructor(
+    provider: AvailableCalendars | keyof typeof AvailableCalendars,
+    credentials: any,
+    connectionString: string,
+  ) {
+    const normalizedProvider = CalendarService.normalizeProvider(provider);
+
+    switch (normalizedProvider) {
       case AvailableCalendars.google:
         this.adapter = new GoogleCalendarAdapter(credentials, connectionString);
         break;
-      default:
-        throw new Error("Unsupported calendar provider");
+      case AvailableCalendars.outlook:
+        this.adapter = new OutlookCalendarAdapter(
+          credentials,
+          connectionString,
+        );
+        break;
     }
   }
 
@@ -66,7 +88,13 @@ export class CalendarService {
     timezone?: string,
     calendarId?: string,
   ): Promise<Slot[]> {
-    return this.adapter.getEventsInRange(userId, startDate, endDate, timezone, calendarId);
+    return this.adapter.getEventsInRange(
+      userId,
+      startDate,
+      endDate,
+      timezone,
+      calendarId,
+    );
   }
 
   /**
@@ -92,7 +120,16 @@ export class CalendarService {
     attendees?: { email: string }[],
     calendarId?: string,
   ): Promise<EventResponse> {
-    return this.adapter.createEvent(userId, summary, start, end, timezone, description, attendees, calendarId);
+    return this.adapter.createEvent(
+      userId,
+      summary,
+      start,
+      end,
+      timezone,
+      description,
+      attendees,
+      calendarId,
+    );
   }
 
   /**

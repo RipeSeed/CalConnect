@@ -1,5 +1,6 @@
 export enum AvailableCalendars {
   google = "google",
+  outlook = 'outlook',
 }
 
 export type Slot = { startDate: string; endDate: string };

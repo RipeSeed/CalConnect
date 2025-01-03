@@ -1,11 +1,10 @@
 import express, { Request, Response } from 'express';
-import { CalendarService } from 'cal-connect';
+import { AvailableCalendars, CalendarService } from '@ripeseed/cal-connect';
 import {
   CallbackQuery,
   EventsQuery,
   CreateEventBody,
-  GoogleCredentials,
-  CustomRequest,
+  OutlookCredentials,
 } from './types';
 
 const app = express();
@@ -13,16 +12,10 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Steps to get these:
-// 1- Go to https://console.cloud.google.com/projectcreate and create a project
-// 2- Go to https://console.cloud.google.com/apis/credentials, On the top click "Create Credentials" and select type "OAuth 2.0 Client IDs"
-// 3- Add redirect URL of your backend application. For example, the API given below https://yourbackenddomain.com/api/google/callback
-// 4- Copy ClientID and Client Server and paste them as below
-const googleCredentials: GoogleCredentials = {
-  clientId: '<your google client ID here>',
-  clientSecret: '<your client secret here>',
-  redirectUri:
-    '<your redirect url i.e. the backend api endpoint to exchange authorization_code with AUTH TOKENS (i.e. AccessToken and RefreshToken) >',
+const outlookCredentials: OutlookCredentials = {
+  clientId: '<client Id>',
+  clientSecret: '<client secret>',
+  redirectUri: 'redirect url of your application',
 };
 
 // This will be the connection string of your mongoDB database
@@ -30,14 +23,14 @@ const dbConnectionString: string = 'mongodb://user:password@localhost:27017';
 
 // Initialize Calendar Service
 const calendarService = new CalendarService(
-  'google',
-  googleCredentials,
+  AvailableCalendars.outlook, // or simply 'outlook'
+  outlookCredentials,
   dbConnectionString,
 );
 
 // BELOW ARE THE EXAMPLES OF HOW YOU CAN USE CALENDAR SERVICES IN YOUR BACKEND CODE
 
-// API ENDPOINT TO CONNECT TO GOOGLE CALENDAR
+// API ENDPOINT TO CONNECT TO OUTLOOK CALENDAR
 app.get('/api/connect', async (_req: Request, res: Response) => {
   const authUrl = calendarService.connect();
   res.send(authUrl);
@@ -55,9 +48,9 @@ app.get('/api/stop', async (_req: Request, res: Response) => {
   res.send('Auto token update stop!');
 });
 
-// API ENDPOINT FOR GOOGLE CALLBACK - to exchange authorization_code with AUTH TOKENS (i.e. AccessToken and RefreshToken)
+// API ENDPOINT FOR OUTLOOK CALLBACK - to exchange authorization_code with AUTH TOKENS (i.e. AccessToken and RefreshToken)
 app.get(
-  '/api/google/callback',
+  '/api/outlook/callback',
   async (req: Request<{}, {}, {}, CallbackQuery>, res: Response) => {
     const { code } = req.query;
     const user_id = '123'; // replace it with your user id
@@ -77,7 +70,7 @@ app.get(
   },
 );
 
-// API ENDPOINT TO GET EVENTS IN A CERTAIN RANGE OF TIME FROM THE GOOGLE CALENDAR
+// API ENDPOINT TO GET EVENTS IN A CERTAIN RANGE OF TIME FROM THE OUTLOOK CALENDAR
 app.get(
   '/api/events',
   async (req: Request<{}, {}, {}, EventsQuery>, res: Response) => {
@@ -115,7 +108,7 @@ app.get(
   },
 );
 
-// API ENDPOINT FOR CREATING AN EVENT IN THE GOOGLE CALENDAR
+// API ENDPOINT FOR CREATING AN EVENT IN THE OUTLOOK CALENDAR
 app.post(
   '/api/events',
   async (req: Request<{}, {}, CreateEventBody>, res: Response) => {

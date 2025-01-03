@@ -1,6 +1,6 @@
 {
   "name": "@ripeseed/cal-connect",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Package for calendar integration",
   "author": "Ripeseed",
   "repository": {
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@microsoft/microsoft-graph-client": "^3.0.7",
+    "@microsoft/microsoft-graph-types": "^2.40.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
@@ -56,8 +57,13 @@
     ]
   },
   "tsup": {
-    "entry": ["src/index.ts"],
-    "format": ["cjs", "esm"],
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
     "splitting": true,
     "sourcemap": true,
     "clean": true
