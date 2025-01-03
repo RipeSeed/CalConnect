@@ -8,25 +8,25 @@ A simple library for scheduling and retrieving calendar events with just one log
 - 🔄 Automatic refresh token management with background jobs
 - 📅 Comprehensive event management (create, retrieve, query)
 - 🌍 Built-in timezone support
-- 📚 Multiple calendar support (Currently only Google)
+- 📚 Multiple calendar support (Currently only Google and Outlook)
 - 🏗️ Extensible architecture for additional providers
 
 ## Installation
 
 ```bash
-npm install cal-connect
+npm install @ripeseed/cal-connect
 ```
 
 ## Importing the Package
 
 ### ESM (Recommended)
 ```javascript
-import { CalendarService } from 'cal-connect';
+import { CalendarService } from '@ripeseed/cal-connect';
 ```
 
 ### CommonJS
 ```javascript
-const { CalendarService } = require('cal-connect');
+const { CalendarService } = require('@ripeseed/cal-connect');
 ```
 
 ## Example Usage
@@ -78,7 +78,7 @@ const eventId = await calendarService.createEvent(
 Creates a new instance of the calendar service.
 
 ```typescript
-new CalendarService(provider: string, credentials: ICredentials, connectionString: string)
+new CalendarService(provider: AvailableCalendars | keyof typeof AvailableCalendars, credentials: ICredentials, connectionString: string)
 ```
 
 **Parameters:**
